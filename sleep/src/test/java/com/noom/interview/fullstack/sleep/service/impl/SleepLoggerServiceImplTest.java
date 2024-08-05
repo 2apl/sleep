@@ -1,9 +1,11 @@
 package com.noom.interview.fullstack.sleep.service.impl;
 
 import static com.noom.interview.fullstack.sleep.dto.UserFelt.GOOD;
+import static java.time.temporal.ChronoUnit.DAYS;
 import static java.time.temporal.ChronoUnit.HOURS;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -12,6 +14,7 @@ import com.noom.interview.fullstack.sleep.dto.CreateSleepLog;
 import com.noom.interview.fullstack.sleep.repository.SleepLoggerRepository;
 import com.noom.interview.fullstack.sleep.service.SleepLogMapper;
 import java.time.Instant;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 
 class SleepLoggerServiceImplTest {
@@ -21,14 +24,14 @@ class SleepLoggerServiceImplTest {
     private final SleepLoggerServiceImpl sleepLoggerService = new SleepLoggerServiceImpl(repository, sleepLogMapper);
 
     @Test
-    void createLog() {
+    void createLogTest() {
         var sleepLog = createSleepLog();
 
         assertDoesNotThrow(() -> sleepLoggerService.createLog(sleepLog));
     }
 
     @Test
-    void getLastNightSleepLog() {
+    void getLastNightSleepLogTest() {
         var sleepLog = getSleepLog();
 
         when(repository.getSleepLogsByDateOfSleep(any())).thenReturn(sleepLog);
@@ -43,7 +46,23 @@ class SleepLoggerServiceImplTest {
     }
 
     @Test
-    void getSleepLogAverages() {
+    void getSleepLogAveragesTest() {
+        var sleepLog1 = getSleepLog();
+        var sleepLog2 = getSleepLog();
+        var sleepLog3 = getSleepLog();
+        var sleepLogList = List.of(sleepLog1, sleepLog2, sleepLog3);
+
+        when(repository.getSleepLogsByDateOfSleepBetween(any(), any()))
+            .thenReturn(sleepLogList);
+
+        var sleepLogAverages = sleepLoggerService.getSleepLogAverages();
+
+        assertNotNull(sleepLogAverages);
+        assertEquals(Instant.now().truncatedTo(DAYS), sleepLogAverages.getDateTo());
+        assertEquals(Instant.now().minus(30, DAYS).truncatedTo(DAYS), sleepLogAverages.getDateFrom());
+        assertEquals(sleepLog1.getTimeInBed(), sleepLogAverages.getAverageTimeInBed());
+        assertEquals(sleepLogList.size(), sleepLogAverages.getUserFeltList().size());
+        assertEquals(GOOD, sleepLogAverages.getUserFeltList().stream().findAny().orElse(null));
     }
 
     private CreateSleepLog createSleepLog() {

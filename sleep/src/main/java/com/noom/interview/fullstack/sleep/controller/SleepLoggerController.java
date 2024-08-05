@@ -22,7 +22,7 @@ public class SleepLoggerController {
 
     @GetMapping("/averages")
     public GetSleepLogRange getAverages() {
-        return GetSleepLogRange.builder().build();
+        return sleepLoggerService.getSleepLogAverages();
     }
 
     @PostMapping("/create")
