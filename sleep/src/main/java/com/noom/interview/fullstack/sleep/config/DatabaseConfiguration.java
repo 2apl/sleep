@@ -1,4 +1,4 @@
-package com.noom.interview.fullstack.sleep.db;
+package com.noom.interview.fullstack.sleep.config;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -14,13 +14,13 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 @Profile("!$UNIT_TEST_PROFILE")
 public class DatabaseConfiguration {
 
-    @Value("{spring.datasource.url}")
+    @Value("${spring.datasource.url}")
     private String url;
 
-    @Value("{spring.datasource.username}")
+    @Value("${spring.datasource.username}")
     private String username;
 
-    @Value("{spring.datasource.password}")
+    @Value("${spring.datasource.password}")
     private String password;
 
     @Bean

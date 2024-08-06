@@ -36,7 +36,7 @@ public class SleepLoggerServiceImpl implements SleepLoggerService {
 
     @Override
     public GetSleepLog getLastNightSleepLog() {
-        var sleepLog = repository.getSleepLogsByDateOfSleep(Instant.now(Clock.systemDefaultZone()));
+        var sleepLog = repository.getSleepLogsByDateOfSleep(Instant.now().truncatedTo(DAYS));
         return sleepLogMapper.toGetSleepLog(sleepLog);
     }
 
